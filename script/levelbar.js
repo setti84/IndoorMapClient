@@ -69,25 +69,38 @@ var levelbar = (function() {
         // interval for a frequent check if all tiles are loaded yet        
         var interval = setInterval(function() {
             // if all tiles are loaded execute update of levelbar
-            if (map.isSourceLoaded("indoor_source")) {
+            console.log("--------")
+            if (!map.isSourceLoaded("indoor_source")) {
+                console.log("out of intervall")
+                return;
+            }
 
-                var t0 = performance.now();
+            var sourcelayer = ["point", "line", "polygon"],
+                features = [];
+            for (var i = 0; i < sourcelayer.length; i++) {
+                features.push(map.querySourceFeatures('indoor_source', { sourceLayer: sourcelayer[i], filter: ['has', 'level'] }));
+            }
 
-                var rawlevel, cleanlevel, selectedLevelbutton, hannover;
+            var t0 = performance.now();
 
+
+            console.log("create webworker")
+
+            var worker = new Worker('./script/testWorker.js');
+
+            worker.addEventListener('message', function(e) {
+                // here is the result from the worker calculation
+                console.log("worker ausgeführt fertig" + e.data)
+                var cleanlevel = e.data[0];
+                var rawlevel = e.data[1];
+
+
+                var selectedLevelbutton;
                 // if no old level is available take zero 
                 var selectedLevel = "0";
 
-                rawlevel = findalllevel(map);
 
 
-                // seperates levels and clean up like ";1" or "EG" or "1.3"  
-                cleanlevel = getindividuallevel(rawlevel);
-
-                //bring levels in the right order
-                cleanlevel.sort(function(a, b) {
-                    return b - a
-                });
 
                 //save old selected level to add later to levelbar again
                 selectedLevelbutton = document.getElementsByClassName("levelbuttonsselected");
@@ -127,14 +140,40 @@ var levelbar = (function() {
 
                 // take the old selected level and update map
                 levelclick(selectedLevel, rawlevel);
-                clearInterval(interval);
-                var t1 = performance.now();
-                console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
-            } else {
-                 //console.log("waiting");
-            }
 
-        }, 200);
+                var t1 = performance.now();
+                console.log("Call took " + (t1 - t0) + " milliseconds.")
+
+
+
+            }, false);
+
+            console.log("start webworker")
+
+            //console.log(map)
+            clearInterval(interval);
+
+            worker.postMessage(features); // start worker 
+
+            //console.log("terminate webworker")
+
+
+
+
+
+            /*              replaced by web worker
+                            rawlevel = findalllevel(map);
+                            // seperates levels and clean up like ";1" or "EG" or "1.3"  
+                            cleanlevel = getindividuallevel(rawlevel);
+
+                            //bring levels in the right order
+                            cleanlevel.sort(function(a, b) {
+                                return b - a
+                            });
+            */
+
+
+        }, 1200);
 
     };
 
