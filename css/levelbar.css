@@ -1,0 +1,30 @@
+
+
+#levelcont {
+	width: 40px;
+	right: 10px;
+	bottom: 30px;
+	max-height: 90%; 
+	overflow-y: auto;	
+}
+.levelbuttons {	
+	border: none;
+	background: #fff;
+	width: 40px;
+	border-bottom: 1px solid #ddd;	
+	vertical-align: middle;
+	line-height: 40px;
+	font-size: larger;
+}
+.levelbuttons:hover{
+	background: #E4E4E4;
+}
+.levelbuttonsselected {	
+	border: none;
+	background: #E4421C;
+	width: 40px;
+	border-bottom: 1px solid #ddd;	
+	vertical-align: middle;
+	line-height: 40px;
+	font-size: larger;
+}
