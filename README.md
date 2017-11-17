@@ -1,6 +1,6 @@
 # IndoorMapClient
-Web client for the visualization of [OpenStreetMap](https://osm.org) Indoor data based on [Mapbox-GL](https://github.com/mapbox/mapbox-gl-js)
-Working example [here](https://sebastiansettgast.com/IndoorMapClient/)
+Web client for the visualization of [OpenStreetMap](https://osm.org) Indoor data based on [Mapbox-GL](https://github.com/mapbox/mapbox-gl-js).
+Working example [here](https://sebastiansettgast.com/IndoorMapClient/).
 ![alt text](./example.png?raw=true "Example")
 
 
@@ -12,7 +12,3 @@ Therefore this web client is an illustration of how to render and visualize OSM 
 ## Installation
 
 Just download this repository and open index.html. It should work out of the box.
-
-## License
-
-A short snippet describing the license (MIT, Apache, etc.)
