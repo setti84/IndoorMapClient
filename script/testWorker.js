@@ -1,5 +1,5 @@
 self.addEventListener('message', function(e) {
-
+    var t0 = performance.now();
     console.log("innerhalb worker")
 
     var features = e.data,
@@ -22,6 +22,7 @@ self.addEventListener('message', function(e) {
 
     };
 
+
     for (i; i < rawlevel.length; i++) {
         singleLevel = rawlevel[i].trim();
         if (singleLevel.includes(";")) {
@@ -30,37 +31,42 @@ self.addEventListener('message', function(e) {
             doubleLevel = singleLevel.split(";");
             var end = doubleLevel.length;
             for (j; j < end; j++) {
-                if (workingarray.indexOf(doubleLevel[j]) === -1) {
-                    workingarray.push(doubleLevel[j]);
+                if (workingarray.indexOf(parseInt(doubleLevel[j])) === -1) {                    
+                    workingarray.push(parseInt(doubleLevel[j]));
                 }
             }
         } else {
-            if (workingarray.indexOf(singleLevel) === -1) {
-                workingarray.push(singleLevel);
+            if (workingarray.indexOf(parseInt(singleLevel)) === -1) {
+                workingarray.push(parseInt(singleLevel));
             }
 
         }
     }
-
-    // this part cleans up the single level strings like "1" or "1;2" or ";1"     
-    for (var i = 0; i < end; i++) {
-        singleLevel2 = workingarray[i].trim();
-
-        if (/^\-?[0-9]\d{0,2}$/.test(singleLevel2) && cleanlevel.indexOf(singleLevel2) === -1) {
+    
+    // delete values which occur more than once
+    for (var i = 0; i < workingarray.length; i++) {
+        singleLevel2 = workingarray[i];
+        if(cleanlevel.indexOf(singleLevel2) === -1){
             cleanlevel.push(singleLevel2);
-        }
-    }
-    //return cleanlevel;
-
+        }        
+    };
 
     //bring levels in the right order
     cleanlevel.sort(function(a, b) {
         return b - a
     });
 
+
+     console.log(rawlevel)
+    console.log(workingarray)
+    console.log(cleanlevel)
+
     self.postMessage([cleanlevel, rawlevel]);
 
     close();
+    var t1 = performance.now();
+                console.log("web worker time " + (t1 - t0) + " milliseconds.")
 
 
 }, false);
+

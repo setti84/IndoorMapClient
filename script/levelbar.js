@@ -3,62 +3,65 @@ var levelbar = (function() {
     var create = function(urlLevel) {
 
         // interval for a frequent check if all tiles are loaded yet
+         // if all tiles are loaded execute update of levelbar
         var intervalStart = setInterval(function() {
 
-            // if all tiles are loaded execute update of levelbar
-            if (map.isSourceLoaded("indoor_source")) {
-
-                // create container for level butttons
-                var levelcont = document.createElement("div");
-                levelcont.setAttribute("id", "levelcont");
-                levelcont.classList.add("panel");
-                document.getElementById("map").appendChild(levelcont);
-
-                var rawlevel, startlevel;
-                var cleanlevel = [];
-
-                //returns all levels which are in the layer
-                rawlevel = findalllevel(map);
-
-                // separates levels and clean up like ";1" or "EG" or "1.3"  
-                cleanlevel = getindividuallevel(rawlevel);
-
-                //bring levels in the right order
-                cleanlevel.sort(function(a, b) {
-                    return b - a
-                });
-
-                //create new div elements which show the levels
-                var laenge = cleanlevel.length;
-                var button, level;
-                for (var i = 0; i < laenge; i++) {
-                    level = cleanlevel[i];
-                    button = document.createElement("button");
-                    button.classList.add("levelbuttons");
-                    button.setAttribute("id", "level" + cleanlevel[i]);
-                    button.innerHTML = cleanlevel[i];
-                    button.addEventListener("click", function(level) {
-                        // wrapper function to send the right level to listener
-                        return function() {
-                            levelclick(level, rawlevel);
-                        };
-                    }(level));
-                    document.getElementById("levelcont").appendChild(button);
-                }
-
-                // add eventlistener for mapchange so levelbar gets updated when move
-                map.on('moveend', function() {
-                    update();
-                });
-
-                // check if a string is given for the first start otherwise take zero               
-                startlevel = checkIfLevelIsAvailable(urlLevel, cleanlevel);
-
-                // set elements for first visualisation               
-                levelclick(startlevel, rawlevel);
-
-                clearInterval(intervalStart);
+            if (!map.isSourceLoaded("indoor_source")) {
+                console.log("indoor source not readdy yet")
+                return;
             }
+
+            // create container for level butttons
+            var levelcont = document.createElement("div");
+            levelcont.setAttribute("id", "levelcont");
+            levelcont.classList.add("panel");
+            document.getElementById("map").appendChild(levelcont);
+
+            var rawlevel, startlevel;
+            var cleanlevel = [];
+
+            //returns all levels which are in the layer
+            rawlevel = findalllevel(map);
+
+            // separates levels and clean up like ";1" or "EG" or "1.3"  
+            cleanlevel = getindividuallevel(rawlevel);
+
+            //bring levels in the right order
+            cleanlevel.sort(function(a, b) {
+                return b - a
+            });
+
+            //create new div elements which show the levels
+            var laenge = cleanlevel.length;
+            var button, level;
+            for (var i = 0; i < laenge; i++) {
+                level = cleanlevel[i];
+                button = document.createElement("button");
+                button.classList.add("levelbuttons");
+                button.setAttribute("id", "level" + cleanlevel[i]);
+                button.innerHTML = cleanlevel[i];
+                button.addEventListener("click", function(level) {
+                    // wrapper function to send the right level to listener
+                    return function() {
+                        levelclick(level, rawlevel);
+                    };
+                }(level));
+                document.getElementById("levelcont").appendChild(button);
+            }
+
+            // add event listener for map change so level-bar gets updated when move
+            map.on('moveend', function() {
+                update();
+            });
+
+            // check if a string is given for the first start otherwise take zero               
+            startlevel = checkIfLevelIsAvailable(urlLevel, cleanlevel);
+
+            // set elements for first visualization               
+            levelclick(startlevel, rawlevel);
+
+            clearInterval(intervalStart);
+
 
         }, 200);
 
@@ -68,118 +71,74 @@ var levelbar = (function() {
 
         // interval for a frequent check if all tiles are loaded yet        
         var interval = setInterval(function() {
+
             // if all tiles are loaded execute update of levelbar
             console.log("--------")
             if (!map.isSourceLoaded("indoor_source")) {
                 console.log("out of intervall")
                 return;
             }
+            var rawlevel, cleanlevel;
 
-            var sourcelayer = ["point", "line", "polygon"],
-                features = [];
-            for (var i = 0; i < sourcelayer.length; i++) {
-                features.push(map.querySourceFeatures('indoor_source', { sourceLayer: sourcelayer[i], filter: ['has', 'level'] }));
+            rawlevel = findalllevel(map);
+            // seperates levels and clean up like ";1" or "EG" or "1.3"  
+            cleanlevel = getindividuallevel(rawlevel);
+
+            var selectedLevelbutton;
+            // if no old level is available take zero 
+            var selectedLevel = 0;
+
+            //save old selected level to add later to levelbar again
+            selectedLevelbutton = document.getElementsByClassName("levelbuttonsselected");
+            if (selectedLevelbutton.length === 1) {
+                selectedLevel = selectedLevelbutton[0].innerHTML;
             }
 
-            var t0 = performance.now();
+            // delete old level buttons and hide box shadow         
+            var conti = document.getElementById("levelcont");
+            while (conti.firstChild) {
+                conti.removeChild(conti.firstChild);
+            }
 
+            //in case no new levels are available go back
+            if (rawlevel.length === 0) {
+                clearInterval(interval);
+                return;
+            }
 
-            console.log("create webworker")
+            //create new div elements which show the levels
+            var laenge = cleanlevel.length;
+            var button, level;
+            var levelbar = document.getElementById("levelcont");
+            for (var i = 0; i < laenge; i++) {
+                level = cleanlevel[i];
+                button = document.createElement("button");
+                button.classList.add("levelbuttons");
+                button.setAttribute("id", "level" + level);
+                button.innerHTML = level;
 
-            var worker = new Worker('./script/testWorker.js');
+                button.addEventListener("click", function(level) {
+                    // wrapper function to send the right level to listener
+                    return function() {
+                        levelclick(level, rawlevel);
+                    };
+                }(level));
 
-            worker.addEventListener('message', function(e) {
-                // here is the result from the worker calculation
-                console.log("worker ausgeführt fertig" + e.data)
-                var cleanlevel = e.data[0];
-                var rawlevel = e.data[1];
+                levelbar.appendChild(button);
+            }
 
+            // take the old selected level and update map
 
-                var selectedLevelbutton;
-                // if no old level is available take zero 
-                var selectedLevel = "0";
-
-
-
-
-                //save old selected level to add later to levelbar again
-                selectedLevelbutton = document.getElementsByClassName("levelbuttonsselected");
-                if (selectedLevelbutton.length === 1) {
-                    selectedLevel = selectedLevelbutton[0].innerHTML;
-                }
-
-                // delete old level buttons and hide box shadow         
-                var conti = document.getElementById("levelcont");
-                while (conti.firstChild) {
-                    conti.removeChild(conti.firstChild);
-                }
-
-                //in case no new levels are available go back
-                if (rawlevel.length === 0) {
-                    clearInterval(interval);
-                    return;
-                }
-
-                //create new div elements which show the levels
-                var laenge = cleanlevel.length;
-                var button, level;
-                for (var i = 0; i < laenge; i++) {
-                    level = cleanlevel[i];
-                    button = document.createElement("button");
-                    button.classList.add("levelbuttons");
-                    button.setAttribute("id", "level" + cleanlevel[i]);
-                    button.innerHTML = cleanlevel[i];
-                    button.addEventListener("click", function(level) {
-                        // wrapper function to send the right level to listener
-                        return function() {
-                            levelclick(level, rawlevel);
-                        };
-                    }(level));
-                    document.getElementById("levelcont").appendChild(button);
-                }
-
-                // take the old selected level and update map
-                levelclick(selectedLevel, rawlevel);
-
-                var t1 = performance.now();
-                console.log("Call took " + (t1 - t0) + " milliseconds.")
-
-
-
-            }, false);
-
-            console.log("start webworker")
-
-            //console.log(map)
+            levelclick(selectedLevel, rawlevel);
             clearInterval(interval);
 
-            worker.postMessage(features); // start worker 
-
-            //console.log("terminate webworker")
-
-
-
-
-
-            /*              replaced by web worker
-                            rawlevel = findalllevel(map);
-                            // seperates levels and clean up like ";1" or "EG" or "1.3"  
-                            cleanlevel = getindividuallevel(rawlevel);
-
-                            //bring levels in the right order
-                            cleanlevel.sort(function(a, b) {
-                                return b - a
-                            });
-            */
-
-
-        }, 1200);
+        }, 200);
 
     };
 
     var levelclick = function(level, rawlevel) {
         var button, oldbutton;
-        // set all level for graphics
+        // set all level for graphics        
         selectLevel(level, rawlevel);
         // remove Styling from old Level
         oldbutton = document.getElementsByClassName("levelbuttonsselected");
@@ -236,31 +195,22 @@ var levelbar = (function() {
                 doubleLevel = singleLevel.split(";");
                 var end = doubleLevel.length;
                 for (j; j < end; j++) {
-                    if (workingarray.indexOf(doubleLevel[j]) === -1) {
-                        workingarray.push(doubleLevel[j]);
+                    if (workingarray.indexOf(parseInt(doubleLevel[j])) === -1) {
+                        workingarray.push(parseInt(doubleLevel[j]));
                     }
                 }
             } else {
-                if (workingarray.indexOf(singleLevel) === -1) {
-                    workingarray.push(singleLevel);
+                if (workingarray.indexOf(parseInt(singleLevel)) === -1) {
+                    workingarray.push(parseInt(singleLevel));
                 }
 
             }
         }
-
-        // this part cleans up the single level strings like "1" or "1;2" or ";1"       
-        var singleLevel2;
-        var cleanlevel = [];
-        var end = workingarray.length;
-
-        for (var i = 0; i < end; i++) {
-            singleLevel2 = workingarray[i].trim();
-
-            if (/^\-?[0-9]\d{0,2}$/.test(singleLevel2) && cleanlevel.indexOf(singleLevel2) === -1) {
-                cleanlevel.push(singleLevel2);
-            }
-        }
-        return cleanlevel;
+        //bring levels in the right order
+        workingarray.sort(function(a, b) {
+            return b - a
+        });
+        return workingarray;
     };
 
 
@@ -270,8 +220,10 @@ var levelbar = (function() {
             end = rawlevel.length,
             ele, levelsarray = [],
             info2;
-        var info = level;
-
+        var info = level.toString();
+        console.log(level)
+        console.log(rawlevel)
+       
         //create helper strings for Regular Expressions  
         if (info > 0) {
             info2 = eval("info - 1");
@@ -316,13 +268,17 @@ var levelbar = (function() {
                 continue;
             }
         }
-
+        console.log(levelsarray)
         for (var i = 0; i < indoorStyle.layers.length; i++) {
 
             var arra = [];
             arra.push(indoorStyle.layers[i].filter);
-            var filtered = ["all", ["in", "level", ].concat(levelsarray)].concat(arra);
-            map.setFilter(indoorStyle.layers[i].id, filtered);
+            console.log(arra)
+            //var filtered = ["all", ["in", "level", ].concat(levelsarray)].concat(arra);
+             var filtered = ["all", ["in", "level", ].concat([info])].concat(arra);
+            // var filtered = ["all", ["in", "level", ].concat(levelsarray)].concat(arra);
+            console.log(filtered.toString())
+            map.setFilter(indoorStyle.layers[i].id, filtered);            
             map.setLayoutProperty(indoorStyle.layers[i].id, 'visibility', 'visible');
         }
     };
@@ -332,7 +288,7 @@ var levelbar = (function() {
 
         if (typeof urlLevel === "undefined" || isNaN(urlLevel)) {
             console.log("unknown level: " + urlLevel);
-            return "0";
+            return 0;
         }
         for (var i = 0; i < cleanlevel.length; i++) {
             if (cleanlevel[i] === urlLevel) {
@@ -341,7 +297,7 @@ var levelbar = (function() {
         };
         // if level doesnt exist in tiles return zero
         console.log("Level doesnt exist in this area: " + urlLevel);
-        return "0";
+        return 0;
 
 
     }
