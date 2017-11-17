@@ -128,7 +128,6 @@ var levelbar = (function() {
             }
 
             // take the old selected level and update map
-
             levelclick(selectedLevel, rawlevel);
             clearInterval(interval);
 
