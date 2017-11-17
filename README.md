@@ -15,5 +15,12 @@ Therefore this web client is an illustration of how to render and visualize OSM 
 
 Just download this repository and open index.html. It should work out of the box.
 
+## Tiles supply
+
+For general map features like streets, rivers and parks common Mapbox vector tiles are used. However, for indoor features a special vector tile source is used. This Source delivers tiles with indoor features like rooms, corridors,... 
+
+## Building detection
+
+All indoor features are loaded for a single building. In OpenStreetMap is usually no identification which indoor features belong to a building. To solve that problem...
 
 

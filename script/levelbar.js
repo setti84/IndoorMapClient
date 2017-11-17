@@ -271,12 +271,9 @@ var levelbar = (function() {
         for (var i = 0; i < indoorStyle.layers.length; i++) {
 
             var arra = [];
-            arra.push(indoorStyle.layers[i].filter);
-            console.log(arra)
-            //var filtered = ["all", ["in", "level", ].concat(levelsarray)].concat(arra);
+            arra.push(indoorStyle.layers[i].filter);     
              var filtered = ["all", ["in", "level", ].concat([info])].concat(arra);
-            // var filtered = ["all", ["in", "level", ].concat(levelsarray)].concat(arra);
-            console.log(filtered.toString())
+            
             map.setFilter(indoorStyle.layers[i].id, filtered);            
             map.setLayoutProperty(indoorStyle.layers[i].id, 'visibility', 'visible');
         }

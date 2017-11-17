@@ -3,7 +3,7 @@ var indoorStyle = {
     "active": false,
     "extrusion": true,
     "layers": [
-        // this layer is almost invisible in rendering but is needed because mapbox.gl doesnt check all layer for level if all layer are set invisible
+         // this layer is almost invisible in rendering but is needed because mapbox.gl doesnt check all layer for level if all layer are set invisible
         {
             "id": "justForRendering",
             "type": "line",
@@ -21,61 +21,6 @@ var indoorStyle = {
                 "line-width": 1
             },
         },
-        // -------------------------------------------------  
-        {
-            "id": "rail",
-            "type": "line",
-            "source": "indoor_source",
-            "source-layer": "line",
-            "filter": ["all", //["in", "level", "0"], 
-                ["any", ["==", "railway", "rail"],
-                    ["==", "railway", "light_rail"]
-                ]
-            ],
-            "layout": {
-                "visibility": "none",
-                "line-cap": "square"
-            },
-            "paint": {
-                "line-color": "#4c4c4c",
-                "line-width": 3
-            },
-        }, {
-            "id": "rail_white",
-            "type": "line",
-            "source": "indoor_source",
-            "source-layer": "line",
-            "filter": ["all", //["in", "level", "0"], 
-                ["any", ["==", "railway", "rail"],
-                    ["==", "railway", "light_rail"]
-                ]
-            ],
-            "layout": {
-                "visibility": "none",
-                "line-cap": "round"
-            },
-            "paint": {
-                "line-color": "white",
-                "line-width": 2.5,
-                'line-dasharray': [3, 4]
-            },
-        }, {
-            "id": "corridor",
-            "type": "fill",
-            "source": "indoor_source",
-            "source-layer": "polygon",
-            "filter": ["all", ["any", ["==", "room", "corridor"],
-                ["==", "indoor", "corridor"],
-                ["==", "indoor", "area"],
-                ["==", "building_part", "floor"]
-            ]],
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "fill-color": "#EDEDED"
-            }
-        },
         {
             "id": "room",
             "type": "fill",
@@ -89,9 +34,55 @@ var indoorStyle = {
                 "visibility": "none"
             },
             "paint": {
-                "fill-color": "#FCC21F"
+                "fill-color": "#D6D6D6"
             }
-        }, {
+        }, 
+        {
+            "id": "corridor",
+            "type": "fill",
+            "source": "indoor_source",
+            "source-layer": "polygon",
+            "filter": ["all", ["any", 
+                ["==", "room", "corridor"],
+                ["==", "indoor", "corridor"],
+                ["==", "indoor", "area"],
+                ["==", "building_part", "floor"]
+            ]],
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "fill-color": "white"
+            }
+        }
+
+        ,
+          {
+            "id": "room_outline",
+            "type": "line",
+            "source": "indoor_source",
+            "source-layer": "polygon",
+            "filter": ["all", ["any", ["any", 
+                ["!=", "room", "corridor"],
+                ["!=", "indoor", "corridor"],
+                ["!=", "indoor", "area"],
+                ["!=", "building_part", "floor"]
+                           
+            ]]],
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "line-color": "#7E7760",
+                "line-width": 2
+
+            }
+        }, 
+        
+        /*
+        ,
+       
+        {
             "id": "room_access",
             "type": "fill",
             "source": "indoor_source",
@@ -105,7 +96,7 @@ var indoorStyle = {
                 "visibility": "none"
             },
             "paint": {
-                "fill-color": "#D5D5D5"
+                "fill-color": "red"
             }
         }, {
             "id": "stairwell",
@@ -123,25 +114,12 @@ var indoorStyle = {
 
             }
         }, {
-            "id": "stairlanding",
-            "type": "fill",
-            "source": "indoor_source",
-            "source-layer": "polygon",
-            "filter": ["all", ["any", ["==", "stairwell", "stair_landing"]]],
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "fill-color": "#EDEDED", // #C4C8CC
-            }
-        }, {
             "id": "stairs",
             "type": "line",
             "source": "indoor_source",
             "source-layer": "line",
             "minzoom": 17,
-            "filter": ["all", ["all", ["==", "highway", "steps"],
-                ["!has", "width"]
+            "filter": ["all", ["all", ["==", "highway", "steps"]
             ]],
             "layout": {
                 "visibility": "none"
@@ -158,78 +136,7 @@ var indoorStyle = {
                 'line-dasharray': [0.05, 0.1] // 0.2,0.4 first number line second number gap
             }
         },
-        {
-            "id": "stairs_width",
-            "type": "line",
-            "source": "indoor_source",
-            "source-layer": "line",
-            "minzoom": 17,
-            "filter": ["all", ["all", ["==", "highway", "steps"],
-                ["has", "width"]
-            ]],
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-
-                'line-color': '#7e7f80',
-                'line-width': {
-                    "stops": [
-                        [17, 5],
-                        [18, 7],
-                        [19, 14],
-                        [20, 28]
-                    ]
-                },
-                'line-dasharray': [0.05, 0.1]
-            }
-        }, {
-            "id": "conveying_up",
-            "minzoom": 18,
-            "type": "symbol",
-            "source": "indoor_source",
-            "source-layer": "line",
-            "layout": {
-                "visibility": "none",
-                "icon-image": "steps-arrow-2.small",
-                "icon-size": 0.6,
-                "symbol-placement": "line",
-                "symbol-spacing": 1,
-            },
-            "filter": ["all", ["any", ["all", ["==", "highway", "steps"],
-                    ["==", "conveying", "forward"],
-                    ["==", "incline", "up"]
-                ],
-                ["all", ["==", "highway", "steps"],
-                    ["==", "conveying", "backward"],
-                    ["==", "incline", "down"]
-                ]
-            ]],
-
-        }, {
-            "id": "conveying_down",
-            "minzoom": 18,
-            "type": "symbol",
-            "source": "indoor_source",
-            "source-layer": "line",
-            "layout": {
-                "visibility": "none",
-                "icon-image": "steps-arrow-2.small",
-                "icon-size": 0.6,
-                "symbol-placement": "line",
-                "icon-rotate": 180,
-                "symbol-spacing": 1,
-            },
-            "filter": ["all", ["any", ["all", ["==", "highway", "steps"],
-                    ["==", "conveying", "forward"],
-                    ["==", "incline", "down"]
-                ],
-                ["all", ["==", "highway", "steps"],
-                    ["==", "conveying", "backward"],
-                    ["==", "incline", "up"]
-                ]
-            ]],
-        },{
+       {
             "id": "platform",
             "type": "fill",
             "source": "indoor_source",
@@ -263,21 +170,6 @@ var indoorStyle = {
 
             }
         }, {
-            "id": "elevator",
-            "type": "fill",
-            "source": "indoor_source",
-            "source-layer": "polygon",
-            "filter": ["all", ["any", ["==", "highway", "elevator"],
-                ["==", "stairwell", "elevator"],
-                ["==", "building_part", "elevator"]
-            ]],
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "fill-color": "#C4C8CC",
-            }
-        }, {
             "id": "facilities",
             "type": "fill",
             "source": "indoor_source",
@@ -292,26 +184,9 @@ var indoorStyle = {
             },
             "paint": {
                 "fill-color": "#066C9E",
-                "fill-outline-color": "#7e7f80"
+                "fill-outline-color": "yellow"
             }
-        }, {
-            "id": "service",
-            "type": "fill",
-            "source": "indoor_source",
-
-            "source-layer": "polygon",
-            "filter": ["all", ["any", ["==", "public_transport", "service_center"],
-                ["==", "public_transport", "service_point"],
-                ["==", "shop", "ticket"],
-                ["==", "amenity", "luggage_locker"]
-            ]],
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "fill-color": "#E7342B"
-            }
-        }, {
+        },  {
             "id": "room_outline",
             "type": "line",
             "source": "indoor_source",
@@ -325,7 +200,11 @@ var indoorStyle = {
                 ["==", "public_transport", "service_point"],
                 ["==", "public_transport", "waiting_room"],
                 ["==", "shop", "ticket"],
-                ["==", "amenity", "luggage_locker"]
+                ["==", "amenity", "luggage_locker"],
+                ["!=", "room", "corridor"],
+                ["!=", "indoor", "corridor"],
+                ["!=", "indoor", "area"],
+                ["!=", "building_part", "floor"]
             ]]],
             "layout": {
                 "visibility": "none"
@@ -356,22 +235,6 @@ var indoorStyle = {
             "source": "indoor_source",
             "source-layer": "polygon",
             "filter": ["all", ["any", ["==", "stairwell", "stair_landing"]]],
-            "layout": {
-                "visibility": "none"
-            },
-            "paint": {
-                "line-color": "#7e7f80",
-                "line-width": 2
-            }
-        }, {
-            "id": "elevator_outline",
-            "type": "line",
-            "source": "indoor_source",
-            "source-layer": "polygon",
-            "filter": ["all", ["any", ["==", "highway", "elevator"],
-                ["==", "stairwell", "elevator"],
-                ["==", "building_part", "elevator"]
-            ]],
             "layout": {
                 "visibility": "none"
             },
@@ -1151,5 +1014,6 @@ var indoorStyle = {
             },
             "source-layer": "rail_station_label"
         }
+        */
     ]
 }
