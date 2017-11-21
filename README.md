@@ -9,7 +9,7 @@ Working example [here](https://sebastiansettgast.com/IndoorMapClient/).
 ## Motivation
 
 For the development of OSM Indoor Data it needs a consumer which is able to interpret the existing data and give an example what can be done with it.
-Therefore this web client is an illustration of how to render and visualize OSM Indoor Data. It is a side project with no further goal  than showing interested people what can be done with indoor data. 
+Therefore this web client is an illustration of how to render and visualize OSM Indoor Data. It is a side project with no further goal than showing interested people what can be done with OSM indoor data. 
 
 ## Installation
 

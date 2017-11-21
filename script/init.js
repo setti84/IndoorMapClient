@@ -2,6 +2,8 @@
 
 var map;
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2V0dGkiLCJhIjoiNmUyMDYzMjlmODNmY2VhOGJhZjc4MTIzNDJiMjkyOGMifQ.hdPIqIoI_VJ_RQW1MXJ18A';
+var buildingMinSize = 100; // in Square Meter
+var worker;
 
 
 // init
