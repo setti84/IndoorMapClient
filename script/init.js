@@ -17,7 +17,7 @@ var worker;
         zoom: 17.21,
         hash: true,
     });
-
+    map.showTileBoundaries = true;
     
     
     map.on('load', function(){

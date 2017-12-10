@@ -15,19 +15,26 @@ function addMapLogic() {
         ];
 
         addLayerToMap(centerCoord, centerBox);
-
-        var buildings = map.queryRenderedFeatures([
+        
+        var queryData = map.queryRenderedFeatures([
             [map.project(boxBuilding[0]).x, map.project(boxBuilding[0]).y],
             [map.project(boxBuilding[1]).x, map.project(boxBuilding[1]).y]
         ], { layers: ['building'] });
-
-        if (buildings.length == 0) {
+        /*
+        var buildings2 = map.querySourceFeatures('mapbox', { sourceLayer: 'building', filter: ['!=', 'type','building:part']});
+        console.log(buildings2)
+        for (var i = 0; i < buildings2.length; i++) {
+            console.log(buildings2[i]);
+        };
+        console.log("-------------------")
+        */
+        if (queryData.length == 0) {
             console.log("building undefined")
             return;
         }
 
         // find the right building of all requested buildings    
-        building.find(buildings);
+        building.find(queryData);
 
 
     });
