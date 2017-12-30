@@ -1,32 +1,65 @@
-{
+backgroundStyle = {
     "version": 8,
-    "name": "Basemap",    
+    "name": "Basemap",
     "sources": {
         "mapbox": {
             "url": "mapbox://mapbox.mapbox-streets-v7",
             "type": "vector"
         },
-
+        "mapzen": {
+            "type": "vector",
+            "tiles": ["https://tile.mapzen.com/mapzen/vector/v1/all/{z}/{x}/{y}.mvt?api_key=vector-tiles-rYhBeMI"]
+        },
         "indoor_source": {
             "type": "vector",
-            "tiles": ["https://openstationmap.org/vector-tiles/{z}/{x}/{y}.pbf"],
-            "minzoom": 16,
-            "maxzoom": 16
+            "scheme": "tms",
+            "tiles": ["https://sebastiansettgast.com/geoserver/gwc/service/tms/1.0.0/indoor:indoor@EPSG:900913@pbf/{z}/{x}/{y}.pbf"],
+            "minzoom": 16
+        },
+        "selectedBuilding": {
+            type: 'geojson',
+            data: {
+                "type": "FeatureCollection",
+                "features": [{
+                    "type": "Feature",
+                    "properties": {
+                        "size": 1,
+                        "distance": 10000,
+                        "id": 1
+                    },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [0, 0],
+                                [0, 0],
+                                [0, 0],
+                                [0, 0],
+                                [0, 0]
+                            ]
+                        ]
+                    }
+                }]
+            }
+        },
+        "indoor_polygon": {
+            type: 'geojson',
+            data: {
+                "type": "FeatureCollection",
+                "features": []
+            }
         }
-
     },
     "sprite": "https://openstationmap.org/0.5.0/sprite/symbol",
     "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
-    "layers": [
-     {
+    "layers": [{
             "id": "background",
             "type": "background",
             "paint": {
                 "background-color": "#dedede"
             },
             "interactive": true
-        },
-        {
+        }, {
             "id": "landuse_overlay_national_park",
             "type": "fill",
             "source": "mapbox",
@@ -41,8 +74,7 @@
                 "fill-opacity": 0.75
             },
             "interactive": true
-        },
-        {
+        }, {
             "id": "landuse_park",
             "type": "fill",
             "source": "mapbox",
@@ -56,15 +88,13 @@
                 "fill-color": "#d2edae"
             },
             "interactive": true
-        },
-        {
+        }, {
             "id": "waterway",
             "type": "line",
             "source": "mapbox",
             "source-layer": "waterway",
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
@@ -93,8 +123,7 @@
                 }
             },
             "interactive": true
-        },
-        {
+        }, {
             "id": "water",
             "type": "fill",
             "source": "mapbox",
@@ -103,33 +132,20 @@
                 "fill-color": "#a0cfdf"
             },
             "interactive": true
-        },
-        {
-            "id": "building",
-            "type": "fill",
-            "source": "mapbox",
-            "source-layer": "building",
-            "paint": {
-                "fill-color": "#d6d6d6"
-            },
-            "interactive": true
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "butt",
                 "line-join": "miter"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway_link",
@@ -172,23 +188,20 @@
                 ]
             },
             "source-layer": "road"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "butt",
                 "line-join": "miter"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway",
@@ -228,23 +241,20 @@
                 ]
             },
             "source-layer": "road"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "round",
                 "line-join": "round"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway_link",
@@ -284,23 +294,20 @@
                 }
             },
             "source-layer": "road"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "round",
                 "line-join": "round"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway",
@@ -337,23 +344,20 @@
                 }
             },
             "source-layer": "road"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "butt",
                 "line-join": "miter"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway_link",
@@ -405,23 +409,20 @@
                 }
             },
             "source-layer": "road"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "butt",
                 "line-join": "miter"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway",
@@ -470,23 +471,20 @@
                 }
             },
             "source-layer": "road"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "round",
                 "line-join": "round"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway_link",
@@ -525,23 +523,20 @@
                 }
             },
             "source-layer": "road"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "round",
                 "line-join": "round"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "in",
                         "class",
                         "motorway",
@@ -577,23 +572,61 @@
                 }
             },
             "source-layer": "road"
-        },
-        {
+        }, {
+            "id": "buildingUnderlay",
+            "type": "fill",
+            "source": "mapzen",
+            "source-layer": "buildings",
+            "paint": {
+                "fill-color": "#d6d6d6"
+
+            }
+        }, {
+            "id": "building",
+            "type": "fill-extrusion",
+            "source": "mapzen",
+            "source-layer": "buildings",
+            "paint": {
+                //"fill-color": "#d6d6d6",
+                'fill-extrusion-color': '#aaa',
+                'fill-extrusion-height': [
+                    "interpolate", ["linear"],
+                    ["zoom"],
+                    15, 0,
+                    15.05, ["get", "height"]
+                ],
+                'fill-extrusion-base': [
+                    "interpolate", ["linear"],
+                    ["zoom"],
+                    15, 0,
+                    15.05, ["get", "min_height"]
+                ],
+                'fill-extrusion-opacity': .6
+            }
+        }, {
+            "id": "selectedBuilding",
+            "type": "fill-extrusion",
+            "source": "selectedBuilding",
+            "paint": {
+                //"fill-color": "#d6d6d6",
+                'fill-extrusion-color': '#1E90FF',
+                'fill-extrusion-height': 0.5 //,               
+                    // 'fill-extrusion-opacity': .6
+            }
+        }, {
             "interactive": true,
             "layout": {
                 "line-cap": "round",
                 "line-join": "round"
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "<=",
                         "admin_level",
                         2
@@ -625,8 +658,7 @@
                 }
             },
             "source-layer": "admin"
-        },
-        {
+        }, {
             "interactive": true,
             "minzoom": 5,
             "layout": {
@@ -646,15 +678,13 @@
                 "icon-size": 1
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "Point"
                 ],
                 [
-                    "all",
-                    [
+                    "all", [
                         "==",
                         "scalerank",
                         1
@@ -676,8 +706,7 @@
                 "text-halo-blur": 1
             },
             "source-layer": "poi_label"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "symbol-placement": "line",
@@ -703,8 +732,7 @@
                 }
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "LineString"
@@ -728,8 +756,7 @@
                 "text-halo-width": 2
             },
             "source-layer": "road_label"
-        },
-        {
+        }, {
             "interactive": true,
             "minzoom": 8,
             "layout": {
@@ -753,8 +780,7 @@
                 }
             },
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "Point"
@@ -780,8 +806,7 @@
                 "text-halo-blur": 1
             },
             "source-layer": "place_label"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "text-field": "{name_en}",
@@ -805,8 +830,7 @@
             },
             "maxzoom": 16,
             "filter": [
-                "all",
-                [
+                "all", [
                     "==",
                     "$type",
                     "Point"
@@ -827,8 +851,7 @@
                 "text-halo-blur": 1
             },
             "source-layer": "place_label"
-        },
-        {
+        }, {
             "interactive": true,
             "layout": {
                 "text-field": "{name_en}",
@@ -866,6 +889,35 @@
                 "text-halo-blur": 1
             },
             "source-layer": "country_label"
-}
+        }, {
+            "id": "testPoly",
+            "type": "fill-extrusion",
+            "source": "indoor_polygon",
+            "paint": {
+                'fill-extrusion-color': 'green',
+                'fill-extrusion-height': 3.01
+            }
+        },
+        /*
+        {
+            "id": "testLine",
+            "type": "line",
+            "source": "indoor_source",
+            "source-layer": "planet_osm_line",
+            "paint": {
+                "line-color": "red",
+                "line-width": 5
+            }
+        },
+        {
+            "id": "testPoint",
+            "type": "circle",
+            "source": "indoor_source",
+            "source-layer": "planet_osm_point",
+            "paint": {
+                "circle-radius": 10,
+                "circle-color": "green"
+            }
+        }*/
     ]
 }

@@ -11,18 +11,22 @@
     <link rel="icon" href="image/favicon.ico">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/levelbar.css">
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css' rel='stylesheet' />
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js"></script>
+    <link href='./css/mapbox-gl0.42.2.css' rel='stylesheet' />
+    <script src="./script/helper/mapbox-gl0.42.2.js"></script>
+    <script src='./script/helper/turf.min.js'></script>
+    <script src='./script/helper/jQuery3.2.1.js'></script>
 </head>
 
 <body>
     <div id='map'></div>
-    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    
     <script src="./script/building.js"></script>
-    <script src="./script/map.js"></script>
-    <script src="./style/indoor.js"></script>
+    <script src="./style/background.js"></script> 
+    <script src="./script/indoor.js"></script>
     <script src="./script/levelbar.js"></script>
+    <script src="./script/debug.js"></script>
     <script src="./script/init.js"></script>
+
 </body>
 
 </html>

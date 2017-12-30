@@ -1,7 +1,79 @@
 var building = (function() {
 
+    var selectedBuildingparts = [];
+
+    var getData = function() {
+
+        var queryData = map.querySourceFeatures('mapzen', {
+            sourceLayer: 'buildings'
+        });
+        var features = [];
+        // somehow its not working in the webworker if i use orginal queryData array. Geometry is cut in this array
+        for (var i = 0; i < queryData.length; i++) {
+            features.push({
+                "type": "Feature",
+                "properties": queryData[i].properties,
+                "geometry": queryData[i].geometry
+            })
+        };
+
+        return features;
+    }
+
+    var bestBuilding = function(features) {
+
+        // find the right building of all requested buildings  
+        if (window.Worker) {
+            if (runningWorkerBuilding) {
+                workerBuilding.terminate();
+            }
+            runningWorkerBuilding = true;
+
+            workerBuilding.postMessage([features, map.getCenter(), selectedBuilding]); // Start the worker.
+
+        } else {
+            console.log("no support for web worker");
+            //What to do here?
+
+        };
+
+    }
+
+
+    var boxBuildingSize = function(zoom) {
+        // returns in dependency to a zoomlevel a number for the size of a polygon
+        var area = 100;
+        if (zoom >= 20) {
+            area = 10;
+        } else if (zoom >= 19) {
+            area = 18;
+        } else if (zoom >= 18) {
+            area = 35;
+        } else if (zoom >= 17) {
+            area = 70;
+        }
+        return area;
+    }
+
+    return {
+        selectedBuildingparts: selectedBuildingparts,
+        getData: getData,
+        bestBuilding: bestBuilding
+    };
+
+}());
+
+/*
+time
+
+var t0 = performance.now();
+    
+var t1 = performance.now();
+console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.")
+
+
     var find = function(queryData) {
-     
+
         var feature;
         var building;
         var singlePolys = [];
@@ -21,7 +93,7 @@ var building = (function() {
                 ]
             }
         };
-        
+
         //    A polygon is commonly defined as an outer ring (the first ring in the polygon data) 
         //    with any number of holes (any other ring in the polygon following).
         //    A multipolygon is a set of polygons, where each polygon has 1 to n rings.    
@@ -68,110 +140,30 @@ var building = (function() {
             };
             buildings.push(building);
             i = -1;
-        } 
+        }
 
         // find the most interesting building and it's outline
-        for (var i = 0; i < buildings.length; i++) {    
+        for (var i = 0; i < buildings.length; i++) {
             // calculation of distance and size of a feature
             //the idea is to use both parameter to calculate a probability for the building being selected            
-            buildings[i].properties.size = Math.round(turf.area(buildings[i]));            
+            buildings[i].properties.size = Math.round(turf.area(buildings[i]));
             // calculate distance for each feature
             buildings[i].properties.distance = turf.distance(turf.centroid(buildings[i]).geometry.coordinates, [map.getCenter().lng, map.getCenter().lat], { units: 'kilometers' }) * 100;
             // compare the result of size and distance for the new and old feature to tell if the new feature is bigger than the old one
-            if (selectedBuilding.properties.size / selectedBuilding.properties.distance < 
+            if (selectedBuilding.properties.size / selectedBuilding.properties.distance <
                 buildings[i].properties.size / buildings[i].properties.distance
-                ) {
+            ) {
                 selectedBuilding = buildings[i];
             };
-        }  
+        }
 
-        // add calculated features to map
-        visualize(selectedBuilding, buildings);
+
+
+        return [buildings, selectedBuilding];
 
     };
 
 
-    var visualize = function(selectedBuilding, features) {
 
 
-        if (map.getLayer('allselectedBuilding') === undefined) {
-
-            map.addLayer({
-                "id": "allselectedBuilding",
-                "type": "fill",
-                "source": {
-                    "type": "geojson",
-                    "data": {
-                        "type": "FeatureCollection",
-                        "features": features
-                    }
-                },
-                'paint': {
-                    'fill-color': 'yellow',
-                    'fill-opacity': 0.2
-                }
-            });
-        } else {
-
-            bui = {
-                "type": "FeatureCollection",
-                "features": features
-            };
-            map.getSource('allselectedBuilding').setData(bui);
-        }
-
-        
-        if (map.getLayer('selectedBuilding') === undefined) {
-
-            map.addLayer({
-                "id": "selectedBuilding",
-                "type": "fill",
-                "source": {
-                    "type": "geojson",
-                    "data": {
-                        "type": "FeatureCollection",
-                        "features": [selectedBuilding]
-                    }
-                },
-                'paint': {
-                    'fill-color': 'green',
-                    'fill-opacity': 0.6
-                }
-            });
-        } else {
-
-            bui2 = {
-                "type": "FeatureCollection",
-                "features": [selectedBuilding]
-            };
-            map.getSource('selectedBuilding').setData(bui2);
-        }
-        
-    }
-
-    var boxBuildingSize = function(zoom) {
-        // returns in dependency to a zoomlevel a number for the size of a polygon
-        var area = 100;
-        if (zoom >= 20) {
-            area = 10;
-        } else if (zoom >= 19) {
-            area = 18;
-        } else if (zoom >= 18) {
-            area = 35;
-        } else if (zoom >= 17) {
-            area = 70;
-        }
-        return area;
-    }
-
-
-  
-
-    return {
-        find: find,
-        boxBuildingSize: boxBuildingSize
-    };
-
-}());
-
-
+*/
